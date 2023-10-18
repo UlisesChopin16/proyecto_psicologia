@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_psicologia/Constants/colors.dart';
 import 'package:proyecto_psicologia/Views/inicio_view.dart';
-import 'package:proyecto_psicologia/Views/test_vocacional_view.dart';
+import 'package:proyecto_psicologia/Views/prioridad_alta_view.dart';
+import 'package:proyecto_psicologia/Views/test_filtro_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,10 +18,12 @@ class MyApp extends StatelessWidget {
       title: 'Asesoria psicologica',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Palette.colorBlue,
       ),
       home: const InicioView(),
-      // home: const TestVocacionalView(),
+      // home: const TestFiltroView(),
+      // home: const PrioridadAltaView(),
+
     );
   }
 }

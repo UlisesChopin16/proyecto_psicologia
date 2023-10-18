@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_psicologia/Components/boton_psicologia.dart';
 import 'package:proyecto_psicologia/Components/header.dart';
-import 'package:proyecto_psicologia/Views/test_vocacional_view.dart';
+import 'package:proyecto_psicologia/Views/test_filtro_view.dart';
 
 class InicioView extends StatefulWidget {
   const InicioView({ Key? key }) : super(key: key);
@@ -91,7 +91,7 @@ class _InicioViewState extends State<InicioView> {
       iconData: Icons.calendar_today_rounded,
       text: 'Agendar cita',
       onTap: (){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TestVocacionalView()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TestFiltroView()));
       },
       width: 150,
     );

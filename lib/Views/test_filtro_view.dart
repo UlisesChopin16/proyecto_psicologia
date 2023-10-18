@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_psicologia/Components/boton_psicologia.dart';
 import 'package:proyecto_psicologia/Components/header.dart';
+import 'package:proyecto_psicologia/Views/agenda_cita_view.dart';
+import 'package:proyecto_psicologia/Views/prioridad_alta_view.dart';
 
-class TestVocacionalView extends StatefulWidget {
-  const TestVocacionalView({ Key? key }) : super(key: key);
+class TestFiltroView extends StatefulWidget {
+  const TestFiltroView({ Key? key }) : super(key: key);
 
   @override
-  State<TestVocacionalView> createState() => _TestVocacionalViewState();
+  State<TestFiltroView> createState() => _TestFiltroViewState();
 }
 
-class _TestVocacionalViewState extends State<TestVocacionalView> {
+class _TestFiltroViewState extends State<TestFiltroView> {
 
   bool isChanged = false;
   bool isFinished = false;
@@ -28,80 +30,68 @@ class _TestVocacionalViewState extends State<TestVocacionalView> {
   );
 
   Map<int,String> preguntas = {
-    0: '¿Con qué frecuencia te sientes triste o deprimido?',
-    1: '¿Con qué frecuencia sientes que la vida no tiene sentido?',
-    2: '¿Has tenido pensamientos de hacer daño a ti mismo o suicidarte?',
-    3: '¿Cómo te sientes con respecto a tu desempeño académico?',
-    4: '¿Cómo te sientes con respecto a tu desempeño laboral?',
-    5: '¿Cómo te sientes con respecto a tu desempeño en tus relaciones interpersonales?',
-    6: '¿Cómo te sientes con respecto a tu desempeño en tu vida familiar?',
-    7: '¿Cómo te sientes con respecto a tu desempeño en tu vida social?',
-    8: '¿Cómo te sientes con respecto a tu desempeño en tu vida sexual?',
+    0: '¿Con qué frecuencia sientes que la vida no tiene sentido?',
+    1: '¿Has tenido pensamientos de hacer daño a ti mismo/a o suicidarte?',
+    2: '¿Cómo te sientes con respecto a tu desempeño académico?',
+    3: '¿Tienes dificultades para concentrarte en tus estudios?',
+    4: '¿Sientes que tienes una buena relación con tu familia?',
+    5: '¿Te sientes solo/a o aislado/a de los demás?',
+    6: '¿Cómo te afecta el estrés en tu vida cotidiana?',
+    7: '¿Has perdido interés en actividades que antes disfrutabas?',
+    8: '¿Cómo te sientes acerca de tu futuro en este momento?',
+    9: '¿Has buscado ayuda psicológica antes?'
   };
   
   Map<int,Map<int,String>> respuestas = {
-    0: {
-      0: 'Nunca',
-      1: 'Casi nunca',
-      2: 'A veces',
-      3: 'Casi siempre',
-      4: 'Siempre'
+    0:{
+      0: 'Siempre',
+      1: 'A veces',
+      2: 'Raramente'
     },
-    1: {
-      0: 'Nunca',
-      1: 'Casi nunca',
-      2: 'A veces',
-      3: 'Casi siempre',
-      4: 'Siempre'
+    1:{
+      0: 'Sí, con frecuencia',
+      1: 'Sí, a veces',
+      2: 'No, nunca'
     },
-    2: {
-      0: 'Nunca',
-      1: 'Casi nunca',
-      2: 'A veces',
-      3: 'Casi siempre',
-      4: 'Siempre'
+    2:{
+      0: 'Muy preocupado/a, me siento abrumado/a',
+      1: 'Preocupado/a, pero puedo manejarlo',
+      2: 'No me preocupo mucho, estoy bien con mis calificaciones'
     },
-    3: {
-      0: 'Muy mal',
-      1: 'Mal',
-      2: 'Regular',
-      3: 'Bien',
-      4: 'Muy bien'
+    3:{
+      0: 'Siempre, no puedo concentrarme en absoluto',
+      1: 'A veces, me distraigo fácilmente',
+      2: 'No tengo problemas para concentrarme'
     },
-    4: {
-      0: 'Muy mal',
-      1: 'Mal',
-      2: 'Regular',
-      3: 'Bien',
-      4: 'Muy bien'
+    4:{
+      0: 'No, tengo muchas tensiones familiares',
+      1: 'Sí, pero a veces hay conflictos',
+      2: 'Sí, tengo una relación sólida con mi familia'
     },
-    5: {
-      0: 'Muy mal',
-      1: 'Mal',
-      2: 'Regular',
-      3: 'Bien',
-      4: 'Muy bien'
+    5:{
+      0: 'Siempre, me siento muy solo/a',
+      1: 'A veces, me siento solo/a en ocasiones',
+      2: 'No, tengo una buena red de apoyo social'
     },
-    6: {
-      0: 'Muy mal',
-      1: 'Mal',
-      2: 'Regular',
-      3: 'Bien',
-      4: 'Muy bien'
+    6:{
+      0: 'Mucho, afecta seriamente mi bienestar',
+      1: 'Algo, pero puedo manejarlo',
+      2: 'No me afecta mucho, puedo lidiar con el estrés'
     },
-    7: {
-      0: 'Muy mal',
-      1: 'Mal',
-      2: 'Regular',
-      3: 'Bien',
-      4: 'Muy bien'
+    7:{
+      0: 'Sí, he perdido todo interés',
+      1: 'A veces, he perdido interés en algunas cosas',
+      2: 'No, todavía disfruto de mis pasatiempos'
     },
-    8: {
-      0: 'Muy mal',
-      1: 'Mal',
-      2: 'Regular',
-      3: 'Bien',
-      4: 'Muy bien'
+    8:{
+      0: 'Muy preocupado/a, no veo un futuro positivo',
+      1: 'Preocupado/a, pero tengo esperanza',
+      2: 'Optimista, creo que mi futuro será bueno'
+    },
+    9:{
+      0: 'Sí, he buscado ayuda profesional previamente',
+      1: 'No, nunca he buscado ayuda',
+      2: 'No, pero he considerado buscar ayuda'
     },
   };
 
@@ -118,25 +108,38 @@ class _TestVocacionalViewState extends State<TestVocacionalView> {
   };
 
   
-  String calcularRespuestaFrecuente(Map<int, String?> respuestasSelec) {
-    // en esta parte se calcula la respuesta mas frecuente
-    final frecuencias = respuestasSelec.values.fold<Map<String, int>>(
+  verificarCantidadLetras(Map<int, String?> respuestasSelec) {
+    final letraFrecuencia = respuestasSelec.values.fold<Map<String, int>>(
       {},
-      // esta funcion se ejecuta por cada respuesta
       (frequencies, respuesta) {
-        // se obtiene la letra de la respuesta
         final letra = respuesta!.split('   ')[0];
-        // se retorna un nuevo mapa con la letra y la frecuencia
         return {...frequencies, letra: (frequencies[letra] ?? 0) + 1};
-      }
+      },
     );
 
-    final letraMasFrecuente = frecuencias.entries.reduce((a, b) => a.value > b.value ? a : b);
-    final porcentaje = (letraMasFrecuente.value / respuestasSelec.length) * 100;
-
-    return '${letraMasFrecuente.key} $porcentaje%';
+    if (letraFrecuencia.containsKey('A')) {
+      final frecuenciaA = letraFrecuencia['A']!;
+      if (frecuenciaA >= 6) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const PrioridadAltaView(),
+          ),
+        );
+      } else if (frecuenciaA >= 4 && frecuenciaA <= 5) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const AgendaCitaView(prioridad: 1),
+          ),
+        );
+      } else {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const AgendaCitaView(prioridad: 3),
+          ),
+        );
+      }
+    }
   }
-
 
 
   @override
@@ -200,23 +203,22 @@ class _TestVocacionalViewState extends State<TestVocacionalView> {
   }
 
   filaBotones(){
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        BotonPsicologia(
-          iconData: Icons.arrow_back_rounded,
-          text: 'Volver',
-          onTap: (){
-            Navigator.pop(context);
-          },
+    return Center(
+      child: SizedBox(
+        width: 500,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            BotonPsicologia(
+              iconData: Icons.arrow_back_rounded,
+              text: 'Volver',
+              onTap: (){
+                Navigator.pop(context);
+              },
+            ),
+          ],
         ),
-        BotonPsicologia(
-          iconData: Icons.save_rounded,
-          text: 'Guardar',
-          width: 150,
-          onTap: (){},
-        ),
-      ],
+      ),
     );
   }
 
@@ -225,7 +227,7 @@ class _TestVocacionalViewState extends State<TestVocacionalView> {
     required Map<int,Map<int,String>> respuestas,
   }){
     return SizedBox(
-      height: 400,
+      height: 300,
       width: 500,
       child: PageView.builder(
         controller: pageController,
@@ -285,7 +287,7 @@ class _TestVocacionalViewState extends State<TestVocacionalView> {
           taps--;
           pageController.previousPage(
             duration: const Duration(milliseconds: 300), 
-            curve: Curves.easeInOut
+            curve: Curves.ease
           );
         });
       },
@@ -311,29 +313,13 @@ class _TestVocacionalViewState extends State<TestVocacionalView> {
             }
           }else{
             isFinished = true;
-            showDialog(
-              
-              context: context, 
-              builder: (context){
-                return AlertDialog(
-                  title: const Text('Test Vocacional'),
-                  content: Text('Tu porcentaje de respuestas es: ${calcularRespuestaFrecuente(respuestasSeleccionadas)}'),
-                  actions: [
-                    TextButton(
-                      onPressed: (){
-                        Navigator.pop(context);
-                      }, 
-                      child: const Text('Aceptar')
-                    )
-                  ],
-                );
-              }
-            );
+            Navigator.of(context).pop();
+            verificarCantidadLetras(respuestasSeleccionadas);
           }
 
           pageController.nextPage(
             duration: const Duration(milliseconds: 300), 
-            curve: Curves.easeInOut
+            curve: Curves.ease
           );
         });
       },
