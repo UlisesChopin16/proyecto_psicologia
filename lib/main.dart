@@ -1,10 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:proyecto_psicologia/Constants/colors.dart';
+import 'package:proyecto_psicologia/Views/agenda_cita_view.dart';
 import 'package:proyecto_psicologia/Views/inicio_view.dart';
 import 'package:proyecto_psicologia/Views/prioridad_alta_view.dart';
 import 'package:proyecto_psicologia/Views/test_filtro_view.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -20,9 +24,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Palette.colorBlue,
       ),
-      home: const InicioView(),
+      // home: const InicioView(),
       // home: const TestFiltroView(),
       // home: const PrioridadAltaView(),
+      home: const AgendaCitaView(prioridad: 3),
 
     );
   }

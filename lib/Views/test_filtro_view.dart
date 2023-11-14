@@ -128,13 +128,17 @@ class _TestFiltroViewState extends State<TestFiltroView> {
       } else if (frecuenciaA >= 4 && frecuenciaA <= 5) {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const AgendaCitaView(prioridad: 1),
+            builder: (context) => const AgendaCitaView(
+              prioridad: 1
+            ),
           ),
         );
       } else {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => const AgendaCitaView(prioridad: 3),
+            builder: (context) => const AgendaCitaView(
+              prioridad: 3
+            ),
           ),
         );
       }
