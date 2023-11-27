@@ -35,24 +35,34 @@ class _HeaderState extends State<Header> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.network(
-              'assets/images/logo.png',
-              fit: BoxFit.contain,
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: Image.network(
+                  'assets/images/logo.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50.0),
+            const Expanded(
               child: Text(
                 'Asesoría Psicológica',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 30,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold
                 ),
               ),
             ),
-            Image.network(
-              'assets/images/logo2.png',
-              fit: BoxFit.contain,
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: Image.network(
+                  'assets/images/logo2.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
             )
           ],
         ),

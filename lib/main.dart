@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_psicologia/Constants/colors.dart';
 import 'package:proyecto_psicologia/Views/agenda_cita_view.dart';
 import 'package:proyecto_psicologia/Views/inicio_view.dart';
+import 'package:proyecto_psicologia/Views/pdf_cita_view.dart';
 import 'package:proyecto_psicologia/Views/prioridad_alta_view.dart';
 import 'package:proyecto_psicologia/Views/test_filtro_view.dart';
 
@@ -22,8 +23,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Palette.colorBlue,
+        useMaterial3: false
       ),
-      home: const InicioView(),
+      // home: const InicioView(),
+      home: const PdfCitaView(),
       // home: const TestFiltroView(),
       // home: const PrioridadAltaView(),
       // home: const AgendaCitaView(prioridad: 3),
