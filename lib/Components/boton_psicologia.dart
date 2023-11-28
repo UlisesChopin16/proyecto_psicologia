@@ -37,7 +37,7 @@ class _BotonPsicologiaState extends State<BotonPsicologia> {
           bottomRight: Radius.circular(20)
         ),
         child: Card(
-          color: const Color(0xFF030D67),
+          color:widget.onTap != null  ? const Color(0xFF030D67) : Colors.grey[400],
           elevation: 3,
           child: SizedBox(
             width: widget.width ?? 130,

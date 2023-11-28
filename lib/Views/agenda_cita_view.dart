@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:proyecto_psicologia/Components/boton_psicologia.dart';
@@ -20,11 +18,13 @@ class AgendaCitaView extends StatefulWidget {
 
 class _AgendaCitaViewState extends State<AgendaCitaView> {
 
+  bool active = false;
+
   DateTime hoy = DateTime.now();
   DateTime selectedDayP = DateTime.now();
   DateTime firstDay = DateTime.now();
 
-  String value = '';
+  String horario = '';
 
   Map<String,List<String>> horarios = {
     'Lunes': [
@@ -57,6 +57,7 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
       '10:00am - 11:00am'
     ],
   };
+
 
   @override
   void initState() {
@@ -96,7 +97,7 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
       child: SizedBox(
         width: 800,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             BotonPsicologia(
               iconData: Icons.arrow_back_rounded,
@@ -104,6 +105,14 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
               onTap: (){
                 Navigator.pop(context);
               },
+            ),
+            BotonPsicologia(
+              iconData: Icons.save_rounded,
+              text: 'Guardar',
+              width: 140,
+              onTap: active ? (){
+                
+              } : null,
             ),
           ],
         ),
@@ -216,7 +225,7 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
             ),
             Expanded(
               child: checkList(),
-            )
+            ),
           ],
         )
       ),
@@ -257,10 +266,11 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
               ),
             ),
             value:e.toString(), 
-            groupValue: value, 
+            groupValue: horario, 
             onChanged: (opcion) {
               setState(() {
-                value = opcion.toString();
+                horario = opcion.toString();
+                active = true;
               });
             },
           ),

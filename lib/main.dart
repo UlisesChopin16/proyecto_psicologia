@@ -6,9 +6,14 @@ import 'package:proyecto_psicologia/Views/inicio_view.dart';
 import 'package:proyecto_psicologia/Views/pdf_cita_view.dart';
 import 'package:proyecto_psicologia/Views/prioridad_alta_view.dart';
 import 'package:proyecto_psicologia/Views/test_filtro_view.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -26,10 +31,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: false
       ),
       // home: const InicioView(),
-      home: const PdfCitaView(),
+      // home: const PdfCitaView(),
       // home: const TestFiltroView(),
       // home: const PrioridadAltaView(),
-      // home: const AgendaCitaView(prioridad: 3),
+      home: const AgendaCitaView(prioridad: 3),
 
     );
   }
