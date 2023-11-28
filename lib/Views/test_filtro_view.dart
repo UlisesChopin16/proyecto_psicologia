@@ -129,7 +129,7 @@ class _TestFiltroViewState extends State<TestFiltroView> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => const AgendaCitaView(
-              prioridad: 1
+              prioridad: 3
             ),
           ),
         );
@@ -137,7 +137,7 @@ class _TestFiltroViewState extends State<TestFiltroView> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => const AgendaCitaView(
-              prioridad: 3
+              prioridad: 5
             ),
           ),
         );

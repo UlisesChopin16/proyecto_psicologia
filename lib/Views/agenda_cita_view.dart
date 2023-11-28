@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:proyecto_psicologia/Components/boton_psicologia.dart';
 import 'package:proyecto_psicologia/Components/header.dart';
 import 'package:proyecto_psicologia/Constants/colors.dart';
+import 'package:proyecto_psicologia/Services/firebase_services.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class AgendaCitaView extends StatefulWidget {
@@ -17,6 +18,8 @@ class AgendaCitaView extends StatefulWidget {
 }
 
 class _AgendaCitaViewState extends State<AgendaCitaView> {
+
+  final servicios = FirebaseServicesS();
 
   bool active = false;
 
