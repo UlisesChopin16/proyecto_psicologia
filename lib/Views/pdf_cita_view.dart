@@ -1,12 +1,11 @@
-import 'dart:convert';
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:proyecto_psicologia/Components/header.dart';
+import 'package:proyecto_psicologia/Services/firebase_services.dart';
 
 class PdfCitaView extends StatefulWidget {
   const PdfCitaView({ Key? key }) : super(key: key);
@@ -16,6 +15,8 @@ class PdfCitaView extends StatefulWidget {
 }
 
 class _PdfCitaViewState extends State<PdfCitaView> {
+
+  final servicios = Get.put(FirebaseServicesS());
 
   double width = 0;
   double height = 0;
@@ -45,6 +46,7 @@ class _PdfCitaViewState extends State<PdfCitaView> {
   }
 
   generarPDF () async {
+
     final img = await rootBundle.load('assets/images/logop.png');
     final imageBytes = img.buffer.asUint8List();
 
@@ -69,13 +71,13 @@ class _PdfCitaViewState extends State<PdfCitaView> {
                       children: [
                         textos(texto: 'Cita N. 135',),
                         pw.SizedBox(height: 40),
-                        textos(texto: '04/Octubre/2023\n10:00 AM',),
+                        textos(texto: '${servicios.fecha.value}\n${servicios.hora.value}',),
                         pw.SizedBox(height: 40),
-                        textos(texto: 'Ago - Dic 2023',),
+                        textos(texto: servicios.periodo.value,),
                         pw.SizedBox(height: 40),
-                        textos(texto: 'Franz Ignacio Espinosa Silva\nC1809562\nIng. en Sistemas Computacionales',),
+                        textos(texto: '${servicios.nombre.value}\n${servicios.numeroControl.value}\n${servicios.carrera.value}',),
                         pw.SizedBox(height: 40),
-                        textos(texto: '734 133 7230'),
+                        textos(texto: servicios.telefono.value),
                         pw.SizedBox(height: 40),
                       ]
                     )
@@ -97,7 +99,9 @@ class _PdfCitaViewState extends State<PdfCitaView> {
         }
       )
     );
+
     return pdf.save();
+
   }
 
   textos({required String texto}) {
@@ -112,34 +116,52 @@ class _PdfCitaViewState extends State<PdfCitaView> {
   @override
   Widget build(BuildContext context) {
     getSize();
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            const Header(),
-            Expanded(
-              child: PdfPreview(
-                build: (format) => archivoPDF!,
-                canDebug: false,
-                canChangePageFormat: false,
-                canChangeOrientation: false,
-                allowSharing: false,
-                maxPageWidth: width * 0.6,
-                pdfPreviewPageDecoration: const BoxDecoration(
-                  color: Colors.black,
-                ),
-                actions: [
-                  IconButton(
-                    onPressed: (){
-                      Printing.sharePdf(bytes: archivoPDF!, filename: 'cita.pdf');
-                    }, 
-                    icon: const Icon(Icons.download)
+    return Obx(
+      ()=> Scaffold(
+        body: Center(
+          child: Column(
+            children: [
+              const Header(),
+              if(!servicios.verificar.value)
+                Expanded(
+                  child: FutureBuilder(
+                    future: initPDF(),
+                    builder: (context, snapshot) {
+                      return PdfPreview(
+                        build: (format) => archivoPDF!,
+                        canDebug: false,
+                        canChangePageFormat: false,
+                        canChangeOrientation: false,
+                        allowSharing: false,
+                        maxPageWidth: width * 0.6,
+                        pdfPreviewPageDecoration: const BoxDecoration(
+                          color: Colors.black,
+                        ),
+                        actions: [
+                          IconButton(
+                            onPressed: (){
+                              Printing.sharePdf(bytes: archivoPDF!, filename: 'cita.pdf');
+                            }, 
+                            icon: const Icon(Icons.download)
+                          ),
+                        ],
+                      );
+                    }
                   ),
-                ],
-              ),
-            ),
-          ],
-        )
+                )
+              else
+                const Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children:[
+                      CircularProgressIndicator(),
+                    ] 
+                  ),
+                ),
+            ],
+          )
+        ),
       ),
     );
   }
