@@ -6,6 +6,7 @@ import 'package:proyecto_psicologia/Components/boton_psicologia.dart';
 import 'package:proyecto_psicologia/Components/header.dart';
 import 'package:proyecto_psicologia/Constants/colors.dart';
 import 'package:proyecto_psicologia/Services/firebase_services.dart';
+import 'package:proyecto_psicologia/Services/generar_pdf_services.dart';
 import 'package:proyecto_psicologia/Views/pdf_cita_view.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -113,8 +114,9 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
   // metodo para obtener la fecha compuesta por ejemplo si tengo 2021-10-10 este metodo me devuelve 10/Octubre/2021 o 01/Enero/2021
   String obtenerFecha(DateTime fecha){
     // obtenemos el día con formato de 2 digitos
+    servicios.fechaNormal.value = fecha.toString().split(' ')[0];
     String dia = fecha.day.toString().padLeft(2, '0');
-    String mes = meses[fecha.month - 1];
+    String mes = meses[fecha.month - 1].toUpperCase();
     String year = fecha.year.toString();
     return '$dia/$mes/$year';
   }
@@ -124,7 +126,6 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
       servicios.telefono.value = value;
       if(servicios.telefono.value.length == 10 && horario != ''){
         active = true;
-        servicios.datosCita['celular'] = servicios.telefono.value;
       }else{
         active = false;
       }
@@ -170,20 +171,77 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
               width: 140,
               onTap: active ? () async {
                 servicios.verificar.value = true;
+                servicios.fecha.value = obtenerFecha(selectedDayP);
                 if(servicios.verificarTelefono.value){
-                  await servicios.actualizarCita(collection: 'estudiantes', id: servicios.numeroControl.value, data: servicios.datosCita);
+                  await servicios.actualizarAlumno(
+                    collection: 'estudiantes', 
+                    id: servicios.numeroControl.value, 
+                    campo: 'celular', 
+                    valor: servicios.telefono.value
+                  );
+                }
+                
+                await servicios.verificarCita(collection: 'Citas', id: '${servicios.fechaNormal.value} $horario');
+
+                if(servicios.verificarCitaExistente.value){
+                  servicios.verificar.value = false;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Ya existe una cita en este horario, porfavor seleccione otro horario',
+                        style: const TextStyle(
+                          fontSize: 18
+                        ),
+                      ),
+                      backgroundColor: Colors.red,
+                      duration: Duration(seconds: 6),
+                    )
+                  );
+                }
+                else{
+                  servicios.hora.value = horario;
+                  servicios.verificar.value = false;
+
+                  servicios.agregarCita(
+                    collection: 'Citas', 
+                    id: '${servicios.fechaNormal.value} ${servicios.hora.value}' ,
+                    data: {
+                      'numeroControlCita': servicios.numeroControl.value, 
+                      'carrera': servicios.carrera.value, 
+                      'numeroTelCita': servicios.telefono.value,
+                      'cicloEscolarCita': servicios.periodo.value,
+                      'fechaCita': servicios.fecha.value,
+                      'nombreCita': servicios.nombre.value,
+                      'horaCita': servicios.hora.value,
+                      'fechaNormal': servicios.fechaNormal.value,
+                    }
+                  );
+
+                  await GenerarPdfServices().initPDF();
+
+                  await servicios.subirArchivo(data: servicios.pdf.value, nombre: '${servicios.fechaNormal.value} ${servicios.hora.value}');
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Cita agendada con exito',
+                        style: const TextStyle(
+                          fontSize: 18
+                        ),
+                      ),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 6),
+                    )
+                  );
+
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const PdfCitaView()
+                    )
+                  );
                 }
 
-                servicios.fecha.value = obtenerFecha(selectedDayP);
-                servicios.hora.value = horario;
-                servicios.verificar.value = false;
-
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const PdfCitaView()
-                  )
-                );
               } : null,
             ),
           ],
@@ -245,7 +303,7 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
             child: TableCalendar(
               focusedDay: selectedDayP, 
               firstDay: firstDay,
-              lastDay: DateTime.utc(2030, 12, 31),
+              lastDay: servicios.lastDay.value,
               selectedDayPredicate: (day) => isSameDay(selectedDayP, day),
               onDaySelected: (selectedDay, focusedDay){
                 setState(() {
