@@ -12,6 +12,7 @@ class FirebaseServicesS extends GetxController{
   var verificar = false.obs;
   var verificarCitaExistente = false.obs; 
   var verificarTelefono = false.obs;
+  var vistaPsicologo = false.obs;
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -20,6 +21,7 @@ class FirebaseServicesS extends GetxController{
   FirebaseAuth auth = FirebaseAuth.instance;
 
   RxList<Map<String,dynamic>> datosCitas = <Map<String,dynamic>>[].obs;
+  RxList<Map<String,dynamic>> puntosCitas = <Map<String,dynamic>>[].obs;
 
   var datosAlumno = <String,dynamic>{}.obs;
   var datosCarrera = <String,dynamic>{}.obs;
@@ -163,17 +165,56 @@ class FirebaseServicesS extends GetxController{
     }
   }
 
+  /// Metodo para obtener todas las citas de firestore en un rango de 30 dias
+  Future<void> obtenerCitas() async {
+    try {
+      // print('obtenerCitas');
+      verificar.value = true;
+      DateTime fecha = DateTime.now();
+      // variable de fecha con 30 dias mas
+      DateTime treinaMas = fecha.add(const Duration(days: 30));
+      
+      // obtenemos los documentos de la coleccion Citas que tengan el campo fechaNormal igual a la fecha dada del alumno
+      QuerySnapshot querySnapshot = await firestore.collection('Citas').where(
+        'fechaNormal', 
+        isGreaterThanOrEqualTo: fecha.toString().split(' ')[0],
+        isLessThanOrEqualTo: treinaMas.toString().split(' ')[0]
+      ).get();
+      querySnapshot.docs.forEach((element) {
+        puntosCitas.add(element.data() as Map<String, dynamic>);
+      });
+      print(puntosCitas);
+      verificar.value = false;
+    } catch (e) {
+      mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+        SnackBar(
+          content: Text(
+            mensajeError.value,
+            style: const TextStyle(
+              fontSize: 18
+            ),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        )
+      );
+      verificar.value = false;
+    }
+  }
+
   // Metodo para obtener un documento a partir de su identificador
   Future<void> obtenerCita({required DateTime fecha}) async {
     try {
       verificar.value = true;
-      print(fecha.toString().split(' ')[0]);
+
+      datosCitas.clear();
+
       // obtenemos los documentos de la coleccion Citas que tengan el campo fechaNormal igual a la fecha dada del alumno
       QuerySnapshot querySnapshot = await firestore.collection('Citas').
       where('fechaNormal', isEqualTo: fecha.toString().split(' ')[0]).get();
       querySnapshot.docs.forEach((element) {
         datosCitas.add(element.data() as Map<String, dynamic>);
-        print(datosCitas);
       });
       verificar.value = false;
     } catch (e) {

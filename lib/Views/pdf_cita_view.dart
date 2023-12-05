@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:proyecto_psicologia/Components/boton_psicologia.dart';
 import 'package:proyecto_psicologia/Components/header.dart';
 import 'package:proyecto_psicologia/Services/firebase_services.dart';
 
@@ -42,10 +43,13 @@ class _PdfCitaViewState extends State<PdfCitaView> {
     getSize();
     return Obx(
       ()=> Scaffold(
+        backgroundColor: Colors.grey[400],
         body: Center(
           child: Column(
             children: [
               const Header(),
+              if(servicios.vistaPsicologo.value)
+                filaBotones(),
               if(!servicios.verificar.value)
                 Expanded(
                   child: PdfPreview(
@@ -80,6 +84,29 @@ class _PdfCitaViewState extends State<PdfCitaView> {
                 ),
             ],
           )
+        ),
+      ),
+    );
+  }
+
+  filaBotones(){
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: SizedBox(
+          width: 800,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              BotonPsicologia(
+                iconData: Icons.arrow_back_rounded,
+                text: 'Volver',
+                onTap: (){
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
