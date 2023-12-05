@@ -5,6 +5,7 @@ import 'package:proyecto_psicologia/Views/agenda_cita_view.dart';
 import 'package:proyecto_psicologia/Views/inicio_view.dart';
 import 'package:proyecto_psicologia/Views/pdf_cita_view.dart';
 import 'package:proyecto_psicologia/Views/prioridad_alta_view.dart';
+import 'package:proyecto_psicologia/Views/psicologo_view.dart';
 import 'package:proyecto_psicologia/Views/test_filtro_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -34,7 +35,8 @@ class MyApp extends StatelessWidget {
       // home: const PdfCitaView(),
       // home: const TestFiltroView(),
       // home: const PrioridadAltaView(),
-      home: const AgendaCitaView(prioridad: 3),
+      // home: const AgendaCitaView(prioridad: 3),
+      home: const PsicologoView(),
 
     );
   }

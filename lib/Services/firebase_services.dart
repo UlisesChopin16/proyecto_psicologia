@@ -19,7 +19,7 @@ class FirebaseServicesS extends GetxController{
 
   FirebaseAuth auth = FirebaseAuth.instance;
 
-  RxList<Map<String,dynamic>> datosCita = <Map<String,dynamic>>[].obs;
+  RxList<Map<String,dynamic>> datosCitas = <Map<String,dynamic>>[].obs;
 
   var datosAlumno = <String,dynamic>{}.obs;
   var datosCarrera = <String,dynamic>{}.obs;
@@ -164,12 +164,16 @@ class FirebaseServicesS extends GetxController{
   }
 
   // Metodo para obtener un documento a partir de su identificador
-  Future<void> obtenerCita() async {
+  Future<void> obtenerCita({required DateTime fecha}) async {
     try {
       verificar.value = true;
-      QuerySnapshot querySnapshot = await firestore.collection('Citas').get();
+      print(fecha.toString().split(' ')[0]);
+      // obtenemos los documentos de la coleccion Citas que tengan el campo fechaNormal igual a la fecha dada del alumno
+      QuerySnapshot querySnapshot = await firestore.collection('Citas').
+      where('fechaNormal', isEqualTo: fecha.toString().split(' ')[0]).get();
       querySnapshot.docs.forEach((element) {
-        datosCita.add(element.data() as Map<String, dynamic>);
+        datosCitas.add(element.data() as Map<String, dynamic>);
+        print(datosCitas);
       });
       verificar.value = false;
     } catch (e) {
@@ -203,7 +207,6 @@ class FirebaseServicesS extends GetxController{
       obtenerNumero();
       await obtenerCarrera(collection: 'planes', id: datosAlumno['clavePlanEstudios'].toString());
       nombre.value = datosAlumno['apellidosNombre'];
-      await obtenerCita();
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
