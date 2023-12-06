@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -139,7 +137,13 @@ class _PsicologoViewState extends State<PsicologoView> {
               onDaySelected: (selectedDay, focusedDay) async {
                 setState(() {
                   // si focusedDay es sabado o domingo entonces no se puede seleccionar
+                  if(focusedDay.weekday == DateTime.saturday){
+                    selectedDayP = selectedDay.add(const Duration(days: 2));
+                  }else if(focusedDay.weekday == DateTime.sunday){
+                    selectedDayP = selectedDay.add(const Duration(days: 1));
+                  }else{
                     selectedDayP = selectedDay;
+                  }
                 });
                 await servicios.obtenerCita(fecha: selectedDayP);
               },
@@ -231,6 +235,8 @@ class _PsicologoViewState extends State<PsicologoView> {
                     borderRadius: BorderRadius.circular(10),
                     hoverColor: Colors.grey[300],
                     onTap: ()async{
+                      servicios.verificar.value = true;
+
                       servicios.fecha.value = e['fechaCita'];
                       servicios.hora.value = e['horaCita'];
                       servicios.periodo.value = e['cicloEscolarCita'];
@@ -242,7 +248,7 @@ class _PsicologoViewState extends State<PsicologoView> {
                       servicios.vistaPsicologo.value = true;
                             
                       await GenerarPdfServices().initPDF();
-                            
+                      servicios.verificar.value = false;
                       await Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => const PdfCitaView()
