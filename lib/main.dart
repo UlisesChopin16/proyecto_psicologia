@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_psicologia/Constants/colors.dart';
 import 'package:proyecto_psicologia/Views/agenda_cita_view.dart';
 import 'package:proyecto_psicologia/Views/inicio_view.dart';
+import 'package:proyecto_psicologia/Views/login_view.dart';
 import 'package:proyecto_psicologia/Views/pdf_cita_view.dart';
 import 'package:proyecto_psicologia/Views/prioridad_alta_view.dart';
 import 'package:proyecto_psicologia/Views/psicologo_view.dart';
@@ -36,7 +37,8 @@ class MyApp extends StatelessWidget {
       // home: const TestFiltroView(),
       // home: const PrioridadAltaView(),
       // home: const AgendaCitaView(prioridad: 3),
-      home: const PsicologoView(),
+      // home: const PsicologoView(),
+      home: const LoginView(),
 
     );
   }

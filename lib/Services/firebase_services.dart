@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:proyecto_psicologia/Views/inicio_view.dart';
 
 
 class FirebaseServicesS extends GetxController{
@@ -48,22 +49,64 @@ class FirebaseServicesS extends GetxController{
 
 
   // Metodo para autenticar un usuario
-  Future<void> autenticarUsuario({required String numeroC, required String password}) async {
+  Future<void> autenticarUsuario({required String numeroC, required String password,required BuildContext context}) async {
     try {
       verificar.value = true;
       String email = '$numeroC@tecnamex.com';
       usuarioCredencial = await auth.signInWithEmailAndPassword(email: email, password: password);
       if(usuarioCredencial != null){
+        
         numeroControl.value = numeroC;
         usuario = usuarioCredencial!.user;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Bienvenido',
+              style: const TextStyle(
+                fontSize: 18
+              ),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+          )
+        );
+
+        // Esta sera la vista del psicologo en csao de que el usuario sea un psicologo
+        // Navigator.of(Get.context!).pushReplacement(
+        //   MaterialPageRoute(
+        //     builder: (context) => const PsicologoView()
+        //   )
+        // );
+
+        // Esta sera la vista del alumno en caso de que el usuario sea un alumno
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const InicioView()
+          )
+        );
+
         verificar.value = false;
       }else{
         mensajeError.value = 'Usuario o contraseña incorrectos';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              mensajeError.value,
+              style: const TextStyle(
+                fontSize: 18
+              ),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          )
+        );
         verificar.value = false;
       }
     } catch (e) {
+      print(e);
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             mensajeError.value,
@@ -114,6 +157,51 @@ class FirebaseServicesS extends GetxController{
     }
   }
 
+  /// Metodo para obtener todas las citas de firestore en un rango de 30 dias
+  Future<void> obtenerCitasAlumno({required String id}) async {
+    try {
+      // print('obtenerCitas');
+      datosCitas.clear();
+
+      verificar.value = true;
+      DateTime fecha = DateTime.now();
+      // variable de fecha con 30 dias mas
+      DateTime treinaMas = fecha.add(const Duration(days: 7));
+      
+      // obtenemos los documentos de la coleccion Citas que tengan el campo fechaNormal igual a la fecha dada del alumno
+      QuerySnapshot querySnapshot = await firestore.collection('Citas')
+      .where(
+        'fechaNormal',
+        isGreaterThanOrEqualTo: fecha.toString().split(' ')[0],
+        isLessThanOrEqualTo: treinaMas.toString().split(' ')[0],
+      )
+      .get();
+
+      querySnapshot.docs.forEach((element) {
+        Map<String, dynamic> datos = element.data() as Map<String, dynamic>;
+        if(datos['numeroControlCita'] == id){
+          datosCitas.add(datos);
+        }
+      });
+      print(datosCitas);
+      verificar.value = false;
+    } catch (e) {
+      mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
+      // ScaffoldMessenger.of(Get.context!).showSnackBar(
+      //   SnackBar(
+      //     content: Text(
+      //       mensajeError.value,
+      //       style: const TextStyle(
+      //         fontSize: 18
+      //       ),
+      //     ),
+      //     backgroundColor: Colors.red,
+      //     duration: const Duration(seconds: 3),
+      //   )
+      // );
+      verificar.value = false;
+    }
+  }
 
   // Metodo para subir información de una cita a firestore con un identificador
   Future<void> agregarCita({required String collection,required String id, required Map<String, dynamic> data}) async {

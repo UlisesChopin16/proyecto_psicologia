@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:proyecto_psicologia/Components/boton_psicologia.dart';
 import 'package:proyecto_psicologia/Components/header.dart';
+import 'package:proyecto_psicologia/Services/firebase_services.dart';
+import 'package:proyecto_psicologia/Views/citas_semana_view.dart';
 import 'package:proyecto_psicologia/Views/test_filtro_view.dart';
 
 class InicioView extends StatefulWidget {
@@ -11,6 +14,8 @@ class InicioView extends StatefulWidget {
 }
 
 class _InicioViewState extends State<InicioView> {
+
+  final servicios = Get.put(FirebaseServicesS());
 
   double height = 0;
   double width = 0;
@@ -26,53 +31,62 @@ class _InicioViewState extends State<InicioView> {
   @override
   Widget build(BuildContext context) {
     _getScreenSize();
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Header(),
-          filaBotones(),
-          const SizedBox(height: 10,),
-          body(),
-        ],
-      ),
-    );
-  }
-
-
-  body(){
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
+    return Obx(
+      ()=> Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20,),
-            filaImportancia(),
-            const SizedBox(height: 40,),
-            filaNota(),
-            const SizedBox(height: 80,),
+            const Header(),
+            if(!servicios.verificar.value)
+              filaBotones(),
+            body(),
           ],
         ),
       ),
     );
   }
 
-  filaBotones(){
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        botonSalir(),
-        SizedBox(
-          child: Row(
+
+  body(){
+    return Obx(
+      ()=> Expanded(
+        child: !servicios.verificar.value ? SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              botonAgendarCita(),
-              botonConsultarCita(),
-            ],
+              const SizedBox(height: 20,),
+              filaImportancia(),
+              const SizedBox(height: 40,),
+              filaNota(),
+              const SizedBox(height: 80,),
+            ]
           ),
-        )
-      ],
+        ): const Center(
+          child: CircularProgressIndicator()
+        ),
+      ),
+    );
+  }
+
+  filaBotones(){
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          botonSalir(),
+          SizedBox(
+            child: Row(
+              children: [
+                botonAgendarCita(),
+                botonConsultarCita(),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -102,7 +116,10 @@ class _InicioViewState extends State<InicioView> {
     return BotonPsicologia(
       iconData: Icons.alarm_rounded,
       text: 'Consultar cita',
-      onTap: (){},
+      onTap: () async {
+        await servicios.obtenerCitasAlumno(id: servicios.numeroControl.value);
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CitasSemanaView()));
+      },
       width: 150,
     );
   }
