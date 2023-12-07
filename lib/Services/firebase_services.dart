@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:proyecto_psicologia/Views/inicio_view.dart';
+import 'package:proyecto_psicologia/Views/psicologo_view.dart';
 
 
 class FirebaseServicesS extends GetxController{
@@ -72,20 +73,20 @@ class FirebaseServicesS extends GetxController{
           )
         );
 
-        // Esta sera la vista del psicologo en csao de que el usuario sea un psicologo
-        // Navigator.of(Get.context!).pushReplacement(
-        //   MaterialPageRoute(
-        //     builder: (context) => const PsicologoView()
-        //   )
-        // );
-
-        // Esta sera la vista del alumno en caso de que el usuario sea un alumno
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const InicioView()
-          )
-        );
-
+        if(numeroControl.value == 'psicologo'){
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const PsicologoView()
+            )
+          );
+        }else{
+          // Esta sera la vista del alumno en caso de que el usuario sea un alumno
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const InicioView()
+            )
+          );
+        }
         verificar.value = false;
       }else{
         mensajeError.value = 'Usuario o contraseña incorrectos';
@@ -124,9 +125,10 @@ class FirebaseServicesS extends GetxController{
 
 
   // Metodo para verificar si existe la cita el nombre del documento es la fecha y hora de la cita
-  Future<void> verificarCita({required String collection,required String id,}) async {
+  Future<void> verificarCita({required String collection,required String id,required BuildContext context}) async {
     try {
       verificar.value = true;
+      verificarCitaExistente.value = false;
       DocumentSnapshot? querySnapshot = await firestore
       .collection(collection)
       .doc(id)
@@ -141,7 +143,7 @@ class FirebaseServicesS extends GetxController{
       }
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             mensajeError.value,
@@ -158,7 +160,7 @@ class FirebaseServicesS extends GetxController{
   }
 
   /// Metodo para obtener todas las citas de firestore en un rango de 30 dias
-  Future<void> obtenerCitasAlumno({required String id}) async {
+  Future<void> obtenerCitasAlumno({required String id,required BuildContext context}) async {
     try {
       // print('obtenerCitas');
       datosCitas.clear();
@@ -187,7 +189,7 @@ class FirebaseServicesS extends GetxController{
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      // ScaffoldMessenger.of(Get.context!).showSnackBar(
+      // ScaffoldMessenger.of(context).showSnackBar(
       //   SnackBar(
       //     content: Text(
       //       mensajeError.value,
@@ -204,13 +206,13 @@ class FirebaseServicesS extends GetxController{
   }
 
   // Metodo para subir información de una cita a firestore con un identificador
-  Future<void> agregarCita({required String collection,required String id, required Map<String, dynamic> data}) async {
+  Future<void> agregarCita({required String collection,required String id, required Map<String, dynamic> data,required BuildContext context}) async {
     try {
       verificar.value = true;
       await firestore.collection(collection).doc(id).set(data);
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             mensajeError.value,
@@ -227,7 +229,7 @@ class FirebaseServicesS extends GetxController{
   }
 
   // Metodo para subir un archivo pdf a firebase storage con Uint8List
-  Future<void> subirArchivo({required Uint8List data,required String nombre}) async {
+  Future<void> subirArchivo({required Uint8List data,required String nombre,required BuildContext context}) async {
     try {
       verificar.value = true;
       final Reference ref = storage.ref().child('CitasPsicologia').child(nombre);
@@ -237,7 +239,7 @@ class FirebaseServicesS extends GetxController{
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             mensajeError.value,
@@ -275,24 +277,12 @@ class FirebaseServicesS extends GetxController{
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
-        SnackBar(
-          content: Text(
-            mensajeError.value,
-            style: const TextStyle(
-              fontSize: 18
-            ),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        )
-      );
       verificar.value = false;
     }
   }
 
   // Metodo para obtener un documento a partir de su identificador
-  Future<void> obtenerCita({required DateTime fecha}) async {
+  Future<void> obtenerCita({required DateTime fecha,required BuildContext context}) async {
     try {
       verificar.value = true;
 
@@ -307,7 +297,7 @@ class FirebaseServicesS extends GetxController{
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             mensajeError.value,
@@ -324,22 +314,21 @@ class FirebaseServicesS extends GetxController{
   }
 
   // Metodo para obtener un documento a partir de su identificador
-  Future<void> obtenerAlumno({required String collection, required String id}) async {
+  Future<void> obtenerAlumno({required String collection, required String id,required BuildContext context}) async {
     try {
       verificar.value = true;
       String coleccionCompleta = '/itz/tecnamex/$collection';
       DocumentSnapshot document = await firestore.collection(coleccionCompleta).doc(id).get();
       datosAlumno.value = document.data() as Map<String, dynamic>;
-
       numeroControl.value = id;
       obtenerPeriodoEscolar();
       obtenerNumero();
-      await obtenerCarrera(collection: 'planes', id: datosAlumno['clavePlanEstudios'].toString());
+      await obtenerCarrera(collection: 'planes', id: datosAlumno['clavePlanEstudios'].toString(),context: context);
       nombre.value = datosAlumno['apellidosNombre'];
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             mensajeError.value,
@@ -356,7 +345,7 @@ class FirebaseServicesS extends GetxController{
   }
 
   // Metodo para obtener un documento a partir de su identificador
-  Future<void> obtenerCarrera({required String collection, required String id}) async {
+  Future<void> obtenerCarrera({required String collection, required String id,required BuildContext context}) async {
     try {
       verificar.value = true;
       String coleccionCompleta = '/itz/tecnamex/$collection';
@@ -365,7 +354,7 @@ class FirebaseServicesS extends GetxController{
       acortarNombreCarrera();
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             mensajeError.value,
@@ -386,7 +375,7 @@ class FirebaseServicesS extends GetxController{
   // {clavePlanEstudios: ISIC-2010-224, periodoIngreso: 20233, apellidosNombre: ESPINOSA SILVA FRANZ IGNACIO, celular: 7341250002}
   // solo quiero actualizar el campo celular
   // entonces el campo que quiero actualizar es celular y el valor que quiero que tenga es 7341250002
-  Future<void> actualizarAlumno({required String collection, required String id, required String campo, required String valor}) async {
+  Future<void> actualizarAlumno({required String collection, required String id, required String campo, required String valor,required BuildContext context}) async {
     try {
       verificar.value = true;
       String coleccionCompleta = '/itz/tecnamex/$collection';
@@ -394,7 +383,7 @@ class FirebaseServicesS extends GetxController{
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             mensajeError.value,

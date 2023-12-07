@@ -98,7 +98,11 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
   void initState() {
     super.initState();
     // día de hoy + 3 días
-    servicios.obtenerAlumno(collection: 'estudiantes', id: 'c18090562');
+    WidgetsBinding.instance.addPostFrameCallback((_)async {
+      // Tu código aquí se ejecutará después de que se haya construido el árbol de widgets.
+      await servicios.obtenerAlumno(collection: 'estudiantes', id: servicios.numeroControl.value,context: context);
+    });
+
     if(hoy.add(Duration(days: widget.prioridad)).weekday == DateTime.saturday){
       selectedDayP = DateTime.now().add(Duration(days: widget.prioridad + 2));
       firstDay = DateTime.now().add(Duration(days: widget.prioridad + 2));
@@ -174,6 +178,7 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
                 servicios.fecha.value = obtenerFecha(selectedDayP);
                 if(servicios.verificarTelefono.value){
                   await servicios.actualizarAlumno(
+                    context: context,
                     collection: 'estudiantes', 
                     id: servicios.numeroControl.value, 
                     campo: 'celular', 
@@ -181,7 +186,7 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
                   );
                 }
                 
-                await servicios.verificarCita(collection: 'Citas', id: '${servicios.fechaNormal.value} $horario');
+                await servicios.verificarCita(collection: 'Citas', id: '${servicios.fechaNormal.value} $horario', context: context);
 
                 if(servicios.verificarCitaExistente.value){
                   servicios.verificar.value = false;
@@ -203,6 +208,7 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
                   servicios.verificar.value = false;
 
                   servicios.agregarCita(
+                    context: context,
                     collection: 'Citas', 
                     id: '${servicios.fechaNormal.value} ${servicios.hora.value}' ,
                     data: {
@@ -219,7 +225,7 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
 
                   await GenerarPdfServices().initPDF();
 
-                  await servicios.subirArchivo(data: servicios.pdf.value, nombre: '${servicios.fechaNormal.value} ${servicios.hora.value}');
+                  await servicios.subirArchivo(data: servicios.pdf.value, nombre: '${servicios.fechaNormal.value} ${servicios.hora.value}', context: context);
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

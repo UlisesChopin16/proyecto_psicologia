@@ -36,8 +36,12 @@ class _PsicologoViewState extends State<PsicologoView> {
   @override
   void initState() {
     super.initState();
-    // día de hoy + 3 días
-    servicios.obtenerCitas();
+    WidgetsBinding.instance.addPostFrameCallback((_)async {
+      // Tu código aquí se ejecutará después de que se haya construido el árbol de widgets.
+      await servicios.obtenerCitas();
+      await servicios.obtenerCita(fecha: selectedDayP,context: context);
+    });
+
   }
 
   
@@ -135,7 +139,7 @@ class _PsicologoViewState extends State<PsicologoView> {
                     selectedDayP = selectedDay;
                   }
                 });
-                await servicios.obtenerCita(fecha: selectedDayP);
+                await servicios.obtenerCita(fecha: selectedDayP,context: context);
               },
               headerStyle: const HeaderStyle(
                 titleCentered: true,
@@ -204,103 +208,93 @@ class _PsicologoViewState extends State<PsicologoView> {
   listaGenerada(){
     return Obx(
       ()=> Flexible(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: !servicios.verificar.value 
-            ? metodoVerificarLista()
-            : const [
-              CircularProgressIndicator(),
-            ]
-          ),
+        child: servicios.datosCitas.isNotEmpty ? ListView(
+          children: metodoVerificarLista()
+        ): const Center(
+          child: Text(
+            'No hay citas pendientes',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold
+            ),
+          )
+        
         ),
       ),
     );
   }
 
   List<Widget> metodoVerificarLista(){
-    if(servicios.datosCitas.length == 0){
-      return [
-        const Text(
-          'No hay citas pendientes',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold
-          ),
-        )
-      ];
-    }else{
-      return servicios.datosCitas.map(
-        (e) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(10),
-              hoverColor: Colors.grey[300],
-              onTap: ()async{
-                servicios.verificar.value = true;
+    
+    return servicios.datosCitas.map(
+      (e) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(10),
+            hoverColor: Colors.grey[300],
+            onTap: ()async{
+              servicios.verificar.value = true;
 
-                servicios.fecha.value = e['fechaCita'];
-                servicios.hora.value = e['horaCita'];
-                servicios.periodo.value = e['cicloEscolarCita'];
-                servicios.nombre.value = e['nombreCita'];
-                servicios.numeroControl.value = e['numeroControlCita']; 
-                servicios.carrera.value = e['carrera'];
-                servicios.telefono.value = e['numeroTelCita'];
-            
-                servicios.vistaPsicologo.value = true;
-                      
-                await GenerarPdfServices().initPDF();
-                servicios.verificar.value = false;
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const PdfCitaView()
-                  )
-                ).then((value) => servicios.vistaPsicologo.value = false);
-              },
-              child: Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        e['nombreCita'],
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-                      const Gap(10),
-                      Text(
-                        e['horaCita'],
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-                      const Gap(10),
-                      Text(e['carrera']),
-                      const Gap(10),
-                      Text(e['numeroTelCita']),
-                      const Gap(10),
-                      Text(e['numeroControlCita']),
-                    ],
-                  ),
+              servicios.fecha.value = e['fechaCita'];
+              servicios.hora.value = e['horaCita'];
+              servicios.periodo.value = e['cicloEscolarCita'];
+              servicios.nombre.value = e['nombreCita'];
+              servicios.numeroControl.value = e['numeroControlCita']; 
+              servicios.carrera.value = e['carrera'];
+              servicios.telefono.value = e['numeroTelCita'];
+          
+              servicios.vistaPsicologo.value = true;
+                    
+              await GenerarPdfServices().initPDF();
+              servicios.verificar.value = false;
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const PdfCitaView()
                 )
+              ).then((value) => servicios.vistaPsicologo.value = false);
+            },
+            child: Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)
               ),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      e['nombreCita'],
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    const Gap(10),
+                    Text(
+                      e['horaCita'],
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    const Gap(10),
+                    Text(e['carrera']),
+                    const Gap(10),
+                    Text(e['numeroTelCita']),
+                    const Gap(10),
+                    Text(e['numeroControlCita']),
+                  ],
+                ),
+              )
             ),
-          );
-        } 
-      ).toList();
-    }
+          ),
+        );
+      } 
+    ).toList();
   }
 
 

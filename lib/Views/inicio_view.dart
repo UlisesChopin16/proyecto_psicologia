@@ -117,7 +117,7 @@ class _InicioViewState extends State<InicioView> {
       iconData: Icons.alarm_rounded,
       text: 'Consultar cita',
       onTap: () async {
-        await servicios.obtenerCitasAlumno(id: servicios.numeroControl.value);
+        await servicios.obtenerCitasAlumno(context: context,id: servicios.numeroControl.value);
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CitasSemanaView()));
       },
       width: 150,
