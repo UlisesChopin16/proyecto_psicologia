@@ -18,8 +18,20 @@ class _CitasSemanaViewState extends State<CitasSemanaView> {
 
   final servicios = Get.put(FirebaseServicesS());
 
+  double width = 0;
+  double height = 0;
+
+  // metodo para obtener el tamaño de la pantalla
+  getSize(BuildContext context){
+    setState(() {
+      width = MediaQuery.of(context).size.width;
+      height = MediaQuery.of(context).size.height;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    getSize( context);
     return Obx(
       () => Scaffold(
         body: Center(
@@ -68,23 +80,22 @@ class _CitasSemanaViewState extends State<CitasSemanaView> {
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
               child: SizedBox(
                 width: 600,
-                child: FittedBox(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Citas de la semana',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 35,
-                          fontWeight: FontWeight.bold
-                        ),
+                height: height * 0.6,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Citas de la semana',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold
                       ),
-                      const Gap(20),
-                      listaCitas()
-                    ],
-                  ),
+                    ),
+                    const Gap(20),
+                    listaCitas()
+                  ],
                 ),
               ),
             ) 
@@ -95,17 +106,13 @@ class _CitasSemanaViewState extends State<CitasSemanaView> {
   }
 
   Widget listaCitas(){
-    return FittedBox(
-      fit: BoxFit.contain,
-      child: SizedBox(
-        width: 400,
-        height: 400,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            listaGenerada()
-          ],
-        )
+    return Expanded(
+      // fit: BoxFit.contain,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          listaGenerada()
+        ],
       ),
     );
   }

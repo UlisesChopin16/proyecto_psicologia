@@ -101,6 +101,7 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
     WidgetsBinding.instance.addPostFrameCallback((_)async {
       // Tu código aquí se ejecutará después de que se haya construido el árbol de widgets.
       await servicios.obtenerAlumno(collection: 'estudiantes', id: servicios.numeroControl.value,context: context);
+      // await servicios.obtenerAlumno(collection: 'estudiantes', id: '19091435',context: context);
     });
 
     if(hoy.add(Duration(days: widget.prioridad)).weekday == DateTime.saturday){

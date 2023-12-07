@@ -100,8 +100,8 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
       // );
       await servicios.obtenerAlumno(
         collection: 'estudiantes',
-        // id: servicios.numeroControl.value,
-        id: '19091435',
+        id: servicios.numeroControl.value,
+        // id: 'c18090562',
         context: context
       );
       if(servicios.telefono.value.length == 10 ){
