@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:proyecto_psicologia/Components/boton_psicologia.dart';
 import 'package:proyecto_psicologia/Components/header.dart';
 import 'package:proyecto_psicologia/Services/firebase_services.dart';
+import 'package:proyecto_psicologia/Services/generar_pdf_services.dart';
+import 'package:proyecto_psicologia/Views/pdf_cita_view.dart';
 
 class PrioridadAltaView extends StatefulWidget {
   const PrioridadAltaView({ Key? key }) : super(key: key);
@@ -13,11 +16,29 @@ class PrioridadAltaView extends StatefulWidget {
 
 class _PrioridadAltaViewState extends State<PrioridadAltaView> {
 
+  MaskTextInputFormatter maskFormatter = MaskTextInputFormatter(
+    // ponemos la mascara que queremos que tenga la fecha de nacimiento
+    // en este caso es la fecha de nacimiento de  4 digitos, un guion, 2 digitos, otro guion y 2 digitos
+    // y seguira este formato al momento de escribirlo
+    mask: 'xxxxxxxxxx', 
+
+    // con este parametro le decimos que el texto se escribira de manera automatica al momento de escribir el texto  
+    type: MaskAutoCompletionType.eager,
+    // con este filtro le decimos que solo acepte numeros
+    // y que cambie los 8x por el numero que escribamos
+    filter: { "x": RegExp(r'[0-9]') },
+  );
+
   final servicios = Get.put(FirebaseServicesS());
+
+  bool active = false;
 
   DateTime verificarFecha = DateTime.now();
 
   bool verificarDiaE = true;
+  String fecha = '';
+  String hora = '';
+  String diaHora = '';
 
   Map<String,List<String>> horarios = {
     'Lunes': [
@@ -51,6 +72,21 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
     ],
   };
 
+  List<String> meses = [
+    'Enero', 
+    'Febrero', 
+    'Marzo', 
+    'Abril', 
+    'Mayo', 
+    'Junio', 
+    'Julio', 
+    'Agosto', 
+    'Septiembre', 
+    'Octubre', 
+    'Noviembre', 
+    'Diciembre'
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -64,90 +100,85 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
       // );
       await servicios.obtenerAlumno(
         collection: 'estudiantes',
-        id: 'c18090562',
+        // id: servicios.numeroControl.value,
+        id: '19091435',
         context: context
       );
+      if(servicios.telefono.value.length == 10 ){
+        active = true;
+      }
     });
   }
 
   // metodo para checar días y verificar si hay horario disponible 
   Future<void> verificarDia() async {
-    print('verificarDia');
     // Si el dia seleccionado es lunes entonces mostrar los horarios de lunes
     while(verificarDiaE){
       if(verificarFecha.weekday == DateTime.monday){
-        for(int i = 0; i < horarios['Lunes']!.length; i++){
-          await servicios.verificarCita(
-            collection: 'Citas',
-            id: '${verificarFecha.toString().split(' ')[0]} ${horarios['Lunes']![i]}',
-            context: context
-          );
-          if(!servicios.verificarCitaExistente.value){
-            print('${verificarFecha.toString().split(' ')[0]} ${horarios['Lunes']![i]}');
-            verificarDiaE = false;
-            return;
-          }
-        }
+        await cicloChecarDia(dia: 'Lunes');
       } else if(verificarFecha.weekday == DateTime.tuesday){
-        for(int i = 0; i < horarios['Martes']!.length; i++){
-          await servicios.verificarCita(
-            collection: 'Citas',
-            id: '${verificarFecha.toString().split(' ')[0]} ${horarios['Martes']![i]}',
-            context: context
-          );
-          if(!servicios.verificarCitaExistente.value){
-            print('${verificarFecha.toString().split(' ')[0]} ${horarios['Martes']![i]}');
-            verificarDiaE = false;
-            return;
-          }
-        }
-        // return listaGenerada('Martes');
+        await cicloChecarDia(dia: 'Martes');
       } else if(verificarFecha.weekday == DateTime.wednesday){
-        for(int i = 0; i < horarios['Miercoles']!.length; i++){
-          await servicios.verificarCita(
-            collection: 'Citas',
-            id: '${verificarFecha.toString().split(' ')[0]} ${horarios['Miercoles']![i]}',
-            context: context
-          );
-          if(!servicios.verificarCitaExistente.value){
-            print('${verificarFecha.toString().split(' ')[0]} ${horarios['Miercoles']![i]}');
-            verificarDiaE = false;
-            return;
-          }
-        }
-        // return listaGenerada('Miercoles');
+        await cicloChecarDia(dia: 'Miercoles');
       } else if(verificarFecha.weekday == DateTime.thursday){
-        for(int i = 0; i < horarios['Jueves']!.length; i++){
-          await servicios.verificarCita(
-            collection: 'Citas',
-            id: '${verificarFecha.toString().split(' ')[0]} ${horarios['Jueves']![i]}',
-            context: context
-          );
-          if(!servicios.verificarCitaExistente.value){
-            print('${verificarFecha.toString().split(' ')[0]} ${horarios['Jueves']![i]}');
-            verificarDiaE = false;
-            return;
-          }
-        }
-        // return listaGenerada('Jueves');
+        await cicloChecarDia(dia: 'Jueves');
       } else if(verificarFecha.weekday == DateTime.friday){
-        for(int i = 0; i < horarios['Viernes']!.length; i++){
-          await servicios.verificarCita(
-            collection: 'Citas',
-            id: '${verificarFecha.toString().split(' ')[0]} ${horarios['Viernes']![i]}',
-            context: context
-          );
-          if(!servicios.verificarCitaExistente.value){
-            print('${verificarFecha.toString().split(' ')[0]} ${horarios['Viernes']![i]}');
-            verificarDiaE = false;
-            return;
-          }
-        }
-        // return listaGenerada('Viernes');
+        await cicloChecarDia(dia: 'Viernes');
+      } else if(verificarFecha.weekday == DateTime.saturday){
+        verificarFecha = verificarFecha.add(const Duration(days: 1));
+      } else if(verificarFecha.weekday == DateTime.sunday){
+
       }
-      verificarFecha = verificarFecha.add(const Duration(days: 1));
+
+      if(!verificarDiaE){
+        return;
+      }else{
+        verificarFecha = verificarFecha.add(const Duration(days: 1));
+      }
+      
     }
   }
+
+  cicloChecarDia({required String dia})async{
+    for(int i = 0; i < horarios[dia]!.length; i++){
+      await servicios.verificarCita(
+        collection: 'Citas',
+        id: '${verificarFecha.toString().split(' ')[0]} ${horarios[dia]![i]}',
+        context: context
+      );
+      if(!servicios.verificarCitaExistente.value){
+        setState(() {
+          verificarDiaE = false;
+          fecha = verificarFecha.toString().split(' ')[0];
+          hora = horarios[dia]![i];
+          diaHora = '${verificarFecha.toString().split(' ')[0]} ${horarios[dia]![i]}';
+        });
+        return;
+      }
+    }
+  }
+
+  void onChangedTelefono(String value){
+    setState(() {
+      servicios.telefono.value = value;
+      if(servicios.telefono.value.length == 10){
+        active = true;
+      }else{
+        active = false;
+      }
+    });
+  }
+
+  // metodo para obtener la fecha compuesta por ejemplo si tengo 2021-10-10 este metodo me devuelve 10/Octubre/2021 o 01/Enero/2021
+  String obtenerFecha(DateTime fecha){
+    // obtenemos el día con formato de 2 digitos
+    servicios.fechaNormal.value = fecha.toString().split(' ')[0];
+    String dia = fecha.day.toString().padLeft(2, '0');
+    String mes = meses[fecha.month - 1].toUpperCase();
+    String year = fecha.year.toString();
+    return '$dia/$mes/$year';
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -190,18 +221,19 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
 
 
   body(){
-    return Expanded(
-      child: !servicios.verificar.value ? Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ingresarTelefono(),
-        ],
-      ) : const Center(
-        child: CircularProgressIndicator()
+    return Obx(
+      ()=> Expanded(
+        child: !servicios.verificar.value ? Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ingresarTelefono(),
+          ],
+        ) : const Center(
+          child: CircularProgressIndicator()
+        ),
       ),
     );
   }
-
 
 
   ingresarTelefono(){
@@ -224,15 +256,28 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
                 ),
               ),
               const SizedBox(height: 20,),
+              // verificamos si el usuario ya tiene un telefono registrado
+              if(servicios.verificarTelefono.value)
               const Text(
                 'Por favor, ingresa tu número de teléfono para que un psicólogo se comunique contigo',
                 style: TextStyle(
                   fontSize: 20,
                 ),
                 textAlign: TextAlign.center,
+              )
+              else
+              const Text(
+                'Por favor, Haga clic en el botón para agendar una cita lo antes posible',
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20,),
-              TextField(
+              if(servicios.verificarTelefono.value)
+              TextFormField(
+                onChanged: onChangedTelefono,
+                inputFormatters: [maskFormatter],
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                   filled: true,
@@ -256,10 +301,55 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
               const SizedBox(height: 20,),
               BotonPsicologia(
                 iconData: Icons.check,
-                text: 'Enviar',
-                onTap: ()async{
+                width: 140,
+                text: 'Agendar',
+                onTap: active ? ()async{
                   await verificarDia();
-                },
+                  servicios.fecha.value = obtenerFecha(verificarFecha);
+                  servicios.hora.value = hora;
+                  if(servicios.verificarTelefono.value){
+                    if(!context.mounted) return;
+                    await servicios.actualizarAlumno(
+                      context: context,
+                      collection: 'estudiantes', 
+                      id: servicios.numeroControl.value, 
+                      campo: 'celular', 
+                      valor: servicios.telefono.value
+                    );
+                  }
+                  if(!context.mounted) return;
+                  await servicios.agregarCita(
+                    context: context,
+                    collection: 'Citas', 
+                    id: diaHora,
+                    data: {
+                      'numeroControlCita': servicios.numeroControl.value, 
+                      'carrera': servicios.carrera.value, 
+                      'numeroTelCita': servicios.telefono.value,
+                      'cicloEscolarCita': servicios.periodo.value,
+                      'fechaCita': servicios.fecha.value,
+                      'nombreCita': servicios.nombre.value,
+                      'horaCita': servicios.hora.value,
+                      'fechaNormal': servicios.fechaNormal.value,
+                      // estampa de tiempo para ordenar las citas
+                      'timestamp': DateTime.now().toString()
+                    }
+                  );
+
+                  await GenerarPdfServices().initPDF();
+
+                  if(!context.mounted) return;
+                  await servicios.subirArchivo(data: servicios.pdf.value, nombre: '${servicios.fechaNormal.value} ${servicios.hora.value}', context: context);
+                  if(!context.mounted) return;
+                  servicios.snackBarSuccess(mensaje: 'Cita agendada con exito', context: context);
+
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const PdfCitaView()
+                    )
+                  );
+                } : null,
               ),
             ],
           ),

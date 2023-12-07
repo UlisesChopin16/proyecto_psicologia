@@ -48,6 +48,37 @@ class FirebaseServicesS extends GetxController{
   User? usuario;
   UserCredential? usuarioCredencial;
 
+  
+  snackBarError({required String mensaje,required BuildContext context}){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          mensaje,
+          style: const TextStyle(
+            fontSize: 18
+          ),
+        ),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+      )
+    );
+  }
+
+  snackBarSuccess({required String mensaje,required BuildContext context}){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          mensaje,
+          style: const TextStyle(
+            fontSize: 18
+          ),
+        ),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 3),
+      )
+    );
+  }
+
 
   // Metodo para autenticar un usuario
   Future<void> autenticarUsuario({required String numeroC, required String password,required BuildContext context}) async {
@@ -60,20 +91,11 @@ class FirebaseServicesS extends GetxController{
         numeroControl.value = numeroC;
         usuario = usuarioCredencial!.user;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Bienvenido',
-              style: const TextStyle(
-                fontSize: 18
-              ),
-            ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 3),
-          )
-        );
+        if(!context.mounted) return;
+        snackBarSuccess(mensaje: 'Bienvenido', context: context);
 
         if(numeroControl.value == 'psicologo'){
+          if(!context.mounted) return;
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => const PsicologoView()
@@ -81,6 +103,7 @@ class FirebaseServicesS extends GetxController{
           );
         }else{
           // Esta sera la vista del alumno en caso de que el usuario sea un alumno
+          if(!context.mounted) return;
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => const InicioView()
@@ -90,35 +113,14 @@ class FirebaseServicesS extends GetxController{
         verificar.value = false;
       }else{
         mensajeError.value = 'Usuario o contraseña incorrectos';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              mensajeError.value,
-              style: const TextStyle(
-                fontSize: 18
-              ),
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          )
-        );
+        if(!context.mounted) return;
+        snackBarError(mensaje: mensajeError.value, context: context);
         verificar.value = false;
       }
     } catch (e) {
-      print(e);
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            mensajeError.value,
-            style: const TextStyle(
-              fontSize: 18
-            ),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        )
-      );
+      if(!context.mounted) return;
+      snackBarError(mensaje: mensajeError.value, context: context);
       verificar.value = false;
     }
   }
@@ -128,6 +130,7 @@ class FirebaseServicesS extends GetxController{
   Future<void> verificarCita({required String collection,required String id,required BuildContext context}) async {
     try {
       verificar.value = true;
+      // print('checando');
       verificarCitaExistente.value = false;
       DocumentSnapshot? querySnapshot = await firestore
       .collection(collection)
@@ -143,18 +146,8 @@ class FirebaseServicesS extends GetxController{
       }
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            mensajeError.value,
-            style: const TextStyle(
-              fontSize: 18
-            ),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        )
-      );
+      if(!context.mounted) return;
+      snackBarError(mensaje: mensajeError.value, context: context);
       verificar.value = false;
     }
   }
@@ -185,22 +178,26 @@ class FirebaseServicesS extends GetxController{
           datosCitas.add(datos);
         }
       });
-      print(datosCitas);
+      
+      // ordenamos las citas por fecha y hora
+      datosCitas.sort((a, b) {
+        int comparacionFecha = a['fechaNormal'].compareTo(b['fechaNormal']);
+
+        if (comparacionFecha == 0) {
+          // Las fechas son iguales, compara las horas
+          String horaA = a['horaCita'].split(' - ')[0];
+          String horaB = b['horaCita'].split(' - ')[0];
+
+          return compararHoras(horaA, horaB);
+        } else {
+          return comparacionFecha;
+        }
+      });
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text(
-      //       mensajeError.value,
-      //       style: const TextStyle(
-      //         fontSize: 18
-      //       ),
-      //     ),
-      //     backgroundColor: Colors.red,
-      //     duration: const Duration(seconds: 3),
-      //   )
-      // );
+      if(!context.mounted) return;
+      snackBarError(mensaje: mensajeError.value, context: context);
       verificar.value = false;
     }
   }
@@ -212,18 +209,8 @@ class FirebaseServicesS extends GetxController{
       await firestore.collection(collection).doc(id).set(data);
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            mensajeError.value,
-            style: const TextStyle(
-              fontSize: 18
-            ),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        )
-      );
+      if(!context.mounted) return;
+      snackBarError(mensaje: mensajeError.value, context: context);
       verificar.value = false;
     }
   }
@@ -239,18 +226,8 @@ class FirebaseServicesS extends GetxController{
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            mensajeError.value,
-            style: const TextStyle(
-              fontSize: 18
-            ),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        )
-      );
+      if(!context.mounted) return;
+      snackBarError(mensaje: mensajeError.value, context: context);
       verificar.value = false;
     }
   }
@@ -273,7 +250,6 @@ class FirebaseServicesS extends GetxController{
       querySnapshot.docs.forEach((element) {
         puntosCitas.add(element.data() as Map<String, dynamic>);
       });
-      print(puntosCitas);
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
@@ -294,22 +270,50 @@ class FirebaseServicesS extends GetxController{
       querySnapshot.docs.forEach((element) {
         datosCitas.add(element.data() as Map<String, dynamic>);
       });
+      
+      // ordenamos las citas por fecha y hora
+      datosCitas.sort((a, b) {
+        int comparacionFecha = a['fechaNormal'].compareTo(b['fechaNormal']);
+
+        if (comparacionFecha == 0) {
+          // Las fechas son iguales, compara las horas
+          String horaA = a['horaCita'].split(' - ')[0];
+          String horaB = b['horaCita'].split(' - ')[0];
+
+          return compararHoras(horaA, horaB);
+        } else {
+          return comparacionFecha;
+        }
+      });
+
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            mensajeError.value,
-            style: const TextStyle(
-              fontSize: 18
-            ),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        )
-      );
+      if(!context.mounted) return;
+      snackBarError(mensaje: mensajeError.value, context: context);
       verificar.value = false;
+    }
+  }
+
+  int compararHoras(String horaA, String horaB) {
+    int horasA = int.parse(horaA.split(':')[0]);
+    int horasB = int.parse(horaB.split(':')[0]);
+
+    if (horaA.toLowerCase().contains('pm') && horasA < 12) {
+      horasA += 12;
+    }
+    
+    if (horaB.toLowerCase().contains('pm') && horasB < 12) {
+      horasB += 12;
+    }
+
+    int minutosA = int.parse(horaA.split(':')[1].replaceAll(RegExp('[^0-9]'), ''));
+    int minutosB = int.parse(horaB.split(':')[1].replaceAll(RegExp('[^0-9]'), ''));
+
+    if (horasA != horasB) {
+      return horasA.compareTo(horasB);
+    } else {
+      return minutosA.compareTo(minutosB);
     }
   }
 
@@ -323,23 +327,14 @@ class FirebaseServicesS extends GetxController{
       numeroControl.value = id;
       obtenerPeriodoEscolar();
       obtenerNumero();
+      if(!context.mounted) return;
       await obtenerCarrera(collection: 'planes', id: datosAlumno['clavePlanEstudios'].toString(),context: context);
       nombre.value = datosAlumno['apellidosNombre'];
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            mensajeError.value,
-            style: const TextStyle(
-              fontSize: 18
-            ),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        )
-      );
+      if(!context.mounted) return;
+      snackBarError(mensaje: mensajeError.value, context: context);
       verificar.value = false;
     }
   }
@@ -354,18 +349,8 @@ class FirebaseServicesS extends GetxController{
       acortarNombreCarrera();
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            mensajeError.value,
-            style: const TextStyle(
-              fontSize: 18
-            ),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        )
-      );
+      if(!context.mounted) return;
+      snackBarError(mensaje: mensajeError.value, context: context);
       verificar.value = false;
     }
   }
@@ -383,18 +368,8 @@ class FirebaseServicesS extends GetxController{
       verificar.value = false;
     } catch (e) {
       mensajeError.value = 'Algo salio mal, porfavor intente de nuevo más tarde';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            mensajeError.value,
-            style: const TextStyle(
-              fontSize: 18
-            ),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        )
-      );
+      if(!context.mounted) return;
+      snackBarError(mensaje: mensajeError.value, context: context);
       verificar.value = false;
     }
   }

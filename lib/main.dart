@@ -35,10 +35,10 @@ class MyApp extends StatelessWidget {
       // home: const InicioView(),
       // home: const PdfCitaView(),
       // home: const TestFiltroView(),
-      home: const PrioridadAltaView(),
+      // home: const PrioridadAltaView(),
       // home: const AgendaCitaView(prioridad: 3),
       // home: const PsicologoView(),
-      // home: const LoginView(),
+      home: const LoginView(),
 
     );
   }

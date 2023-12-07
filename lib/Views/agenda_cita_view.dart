@@ -185,29 +185,19 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
                     valor: servicios.telefono.value
                   );
                 }
-                
+                if (!context.mounted) return;
                 await servicios.verificarCita(collection: 'Citas', id: '${servicios.fechaNormal.value} $horario', context: context);
 
                 if(servicios.verificarCitaExistente.value){
                   servicios.verificar.value = false;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Ya existe una cita en este horario, porfavor seleccione otro horario',
-                        style: const TextStyle(
-                          fontSize: 18
-                        ),
-                      ),
-                      backgroundColor: Colors.red,
-                      duration: Duration(seconds: 6),
-                    )
-                  );
+                  if (!context.mounted) return;
+                  servicios.snackBarError(mensaje: 'Ya existe una cita en este horario, porfavor seleccione otro horario', context: context);
                 }
                 else{
                   servicios.hora.value = horario;
                   servicios.verificar.value = false;
-
-                  servicios.agregarCita(
+                  if (!context.mounted) return;
+                  await servicios.agregarCita(
                     context: context,
                     collection: 'Citas', 
                     id: '${servicios.fechaNormal.value} ${servicios.hora.value}' ,
@@ -220,25 +210,16 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
                       'nombreCita': servicios.nombre.value,
                       'horaCita': servicios.hora.value,
                       'fechaNormal': servicios.fechaNormal.value,
+                      // estampa de tiempo para ordenar las citas
+                      'timestamp': DateTime.now().toString()
                     }
                   );
 
                   await GenerarPdfServices().initPDF();
-
+                  if (!context.mounted) return;
                   await servicios.subirArchivo(data: servicios.pdf.value, nombre: '${servicios.fechaNormal.value} ${servicios.hora.value}', context: context);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Cita agendada con exito',
-                        style: const TextStyle(
-                          fontSize: 18
-                        ),
-                      ),
-                      backgroundColor: Colors.green,
-                      duration: Duration(seconds: 6),
-                    )
-                  );
+                  if (!context.mounted) return;
+                  servicios.snackBarSuccess(mensaje: 'Cita agendada con exito', context: context);
 
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
