@@ -339,7 +339,7 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
                   await GenerarPdfServices().initPDF();
 
                   if(!context.mounted) return;
-                  await servicios.subirArchivo(data: servicios.pdf.value, nombre: '${servicios.fechaNormal.value} ${servicios.hora.value}', context: context);
+                  await servicios.subirArchivo(data: servicios.pdf.value, nombre: '${servicios.fechaNormal.value} ${servicios.hora.value}.pdf', context: context);
                   if(!context.mounted) return;
                   servicios.snackBarSuccess(mensaje: 'Cita agendada con exito', context: context);
 
