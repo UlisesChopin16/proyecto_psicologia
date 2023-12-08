@@ -409,6 +409,7 @@ class FirebaseServicesS extends GetxController{
   // Ingeniería en Sistemas Computacionales
   // Ing. en Sistemas Computacionales
   acortarNombreCarrera(){
+    carrera.value = '';
     String nombreCarrera = datosCarrera['nombre'].toString();
     List<String> nombreCarreraSeparado = nombreCarrera.split(' ');
     for(int i = 0; i < nombreCarreraSeparado.length; i++){
