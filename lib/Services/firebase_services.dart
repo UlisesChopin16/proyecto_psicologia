@@ -384,13 +384,13 @@ class FirebaseServicesS extends GetxController{
     String periodoYear = datosAlumno['periodoIngreso'].toString().substring(0, 4);
     String periodoMes = datosAlumno['periodoIngreso'].toString().substring(4, 5);
     if(periodoMes == '1'){
-      lastDay.value = DateTime(int.parse(periodoYear), 6, 15);
+      lastDay.value = DateTime(int.parse(periodoYear), 6, 20);
       periodo.value = 'ENE - JUN $periodoYear';
     }else if(periodoMes == '2'){
       lastDay.value = DateTime(int.parse(periodoYear), 7, 30);
       periodo.value = 'VERANO $periodoYear';
     }else if(periodoMes == '3'){
-      lastDay.value = DateTime(int.parse(periodoYear), 12, 15);
+      lastDay.value = DateTime(int.parse(periodoYear), 12, 20);
       periodo.value = 'AGO - DIC $periodoYear';
     }
   }

@@ -249,7 +249,7 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [ 
               const Text(
-                'Tu prioridad es ALTA',
+                'Tu cita será registrada',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold

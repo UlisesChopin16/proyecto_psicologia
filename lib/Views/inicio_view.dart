@@ -251,7 +251,7 @@ class _InicioViewState extends State<InicioView> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30.0),
                   child: Text(
-                    'Al agendar una cita deberás responder un cuestionario, el cual será evaluado para determinar si tu consulta es urgente, medianamente urgente y no tan unrgente, en la cual se priorizará dependiendo si tienes problemas relacionados con el suicidio, problemas familiares o personales y escolares, en el caso que sea urgende podrás agendar inmediatamente a partir del siguiente día, si es medio podrás agendar a partir del tercer día, y si no es tan urgente podrás agendar después de una semana.',
+                    'Al agendar una cita deberás responder un cuestionario, el cual nos permitirá conocer un poco más acerca de ti, por lo que te pedimos no pensar mucho tu respuesta. Dependiendo tus respuestas tu cita se agendará automáticamente al siguiente día, o te permitirá escoger un horario después de 3 o 6 días hábiles.',
                     textAlign: TextAlign.justify,
                     style: TextStyle(
                       color: Colors.white,
