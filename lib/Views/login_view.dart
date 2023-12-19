@@ -23,9 +23,9 @@ class _LoginViewState extends State<LoginView> {
             iconData: Icons.login,
             text: 'Iniciar sesión',
             onTap: ()async{
-              await servicios.autenticarUsuario(numeroC: 'psicologo', password: '123456', context: context);
+              // await servicios.autenticarUsuario(numeroC: 'psicologo', password: '123456', context: context);
               // await servicios.autenticarUsuario(numeroC: '19091435', password: '123456', context: context);
-              // await servicios.autenticarUsuario(numeroC: 'c18090562', password: '123456', context: context);
+              await servicios.autenticarUsuario(numeroC: 'c18090562', password: '123456', context: context);
             },
           ) : const CircularProgressIndicator(),
         ),

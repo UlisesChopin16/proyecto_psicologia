@@ -133,7 +133,7 @@ class _TestFiltroViewState extends State<TestFiltroView> {
             ),
           ),
         );
-      } else {
+      } else{
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => const AgendaCitaView(
@@ -142,6 +142,14 @@ class _TestFiltroViewState extends State<TestFiltroView> {
           ),
         );
       }
+    }else{
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const AgendaCitaView(
+            prioridad: 5
+          ),
+        ),
+      );
     }
   }
 

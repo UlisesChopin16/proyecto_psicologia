@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:proyecto_psicologia/Components/boton_psicologia.dart';
 import 'package:proyecto_psicologia/Components/header.dart';
 import 'package:proyecto_psicologia/Constants/colors.dart';
 import 'package:proyecto_psicologia/Services/firebase_services.dart';

@@ -39,6 +39,7 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
   final servicios = Get.put(FirebaseServicesS());
 
   bool active = false;
+  bool mensaje = false;
 
   DateTime hoy = DateTime.now();
   DateTime selectedDayP = DateTime.now();
@@ -107,12 +108,22 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
     if(hoy.add(Duration(days: widget.prioridad)).weekday == DateTime.saturday){
       selectedDayP = DateTime.now().add(Duration(days: widget.prioridad + 2));
       firstDay = DateTime.now().add(Duration(days: widget.prioridad + 2));
+      // Si el dia seleccionado y el primer día es mayor o igual al ultimo dia entonces activamos el mensaje 
+      if(selectedDayP.isAfter(servicios.lastDay.value) || firstDay.isAfter(servicios.lastDay.value) || selectedDayP == servicios.lastDay.value || firstDay == servicios.lastDay.value){
+        mensaje = true;
+      }
     }else if(hoy.add( Duration(days: widget.prioridad)).weekday == DateTime.sunday){
       selectedDayP = DateTime.now().add(Duration(days: widget.prioridad + 1));
       firstDay = DateTime.now().add(Duration(days: widget.prioridad + 1));
+      if(selectedDayP.isAfter(servicios.lastDay.value) || firstDay.isAfter(servicios.lastDay.value)){
+        mensaje = true;
+      }
     }else{
       selectedDayP = DateTime.now().add(Duration(days: widget.prioridad));
       firstDay = DateTime.now().add(Duration(days: widget.prioridad));
+      if(selectedDayP.isAfter(servicios.lastDay.value) || firstDay.isAfter(servicios.lastDay.value)){
+        mensaje = true;
+      }
     }
   }
 
@@ -245,23 +256,34 @@ class _AgendaCitaViewState extends State<AgendaCitaView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            !servicios.verificar.value ? Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0),
-              child: SizedBox(
-                width: 950,
-                child: FittedBox(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      tableCalendar(),
-                      const Gap(20),
-                      listaHorarios(),
-                    ],
+            !servicios.verificar.value ? 
+              !mensaje ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                child: SizedBox(
+                  width: 950,
+                  child: FittedBox(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        tableCalendar(),
+                        const Gap(20),
+                        listaHorarios(),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ) : const CircularProgressIndicator()
+              ) : const SizedBox(
+                width: 950,
+                child: Text(
+                  'Ya han acabado las clases por lo que no se pueden agendar más citas en este periodo',
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              )
+            : const CircularProgressIndicator()
           ],
         ),
       ),

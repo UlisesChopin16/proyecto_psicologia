@@ -32,6 +32,7 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
   final servicios = Get.put(FirebaseServicesS());
 
   bool active = false;
+  bool mensaje = false;
 
   DateTime verificarFecha = DateTime.now();
 
@@ -91,6 +92,10 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
   void initState() {
     super.initState();
     // día de hoy + 3 días
+    if(verificarFecha.isAfter(servicios.lastDay.value) || verificarFecha == servicios.lastDay.value){
+      mensaje = true;
+      return;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) async{
       // Tu código aquí se ejecutará después de que se haya construido el árbol de widgets.
       // await servicios.obtenerAlumno(
@@ -108,6 +113,7 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
         active = true;
       }
     });
+
   }
 
   // metodo para checar días y verificar si hay horario disponible 
@@ -223,12 +229,26 @@ class _PrioridadAltaViewState extends State<PrioridadAltaView> {
   body(){
     return Obx(
       ()=> Expanded(
-        child: !servicios.verificar.value ? Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ingresarTelefono(),
-          ],
-        ) : const Center(
+        child: !servicios.verificar.value ?
+         !mensaje ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ingresarTelefono(),
+              ],
+            ) 
+          : const Center(
+            child: SizedBox(
+                width: 950,
+                child: Text(
+                  'Ya han acabado las clases por lo que no se pueden agendar más citas en este periodo',
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+          )
+        : const Center(
           child: CircularProgressIndicator()
         ),
       ),
